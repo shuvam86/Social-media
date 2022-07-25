@@ -11,6 +11,8 @@ const cookieParser = require('cookie-parser');
 const keys = require('./config/keys');
 
 const User= require('./models/user');  //we collected user information in this variable
+const Post= require('./models/post');
+
 
 
 
@@ -18,6 +20,14 @@ const User= require('./models/user');  //we collected user information in this v
 
 
 require('./passport/google-passport');
+require('./passport/facebook-passport');
+
+
+const {
+    ensureAuthentication
+} = require('./helpers/auth');
+
+
 // initialize application
 const app = express();
 // Express config
@@ -86,8 +96,28 @@ app.get('/auth/google/callback',
         // Successful authentication, redirect home.
         res.redirect('/profile');
     });
-app.get('/profile', (req, res) => {
-    User.findById({_id:req.user._id})     //we will find user information through user collection (line no 32(user))
+
+
+//FB auth route
+app.get('/auth/facebook',
+  passport.authenticate('facebook', {
+    scope: 'email'
+  }));
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/' }),
+  (req, res) => {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+
+//handle profile route
+
+
+
+
+app.get('/profile', ensureAuthentication, (req, res) => {
+    User.findById({_id:req.user._id})     //we will find user information through user collection (line no 32(user)) and find specific id ny findById
     .then((user) => {
         res.render('profile', {
             user:user
@@ -96,6 +126,52 @@ app.get('/profile', (req, res) => {
 
     // res.render('profile');
 });
+
+app.get('/users',(req,res) => {
+    User.find({}).then((users) => {       // {} retrieve all users from collection
+        res.render('users', {
+            users:users                   // we pass users object which contain all users data
+        });
+    });
+});
+
+app.get('/user/:id',(req,res) => {
+    User.findById({_id: req.params.id})       //params is used to get parameter and id is used to get id from :id from line 136. We will find id matching from users collection by _id
+    .then((user) => {                         //we get a specific user
+        res.render('user', {
+            user:user
+        });
+    });
+});
+
+
+
+app.post('/addPhone',(req,res) => {
+    const phone= req.body.phone;
+    User.findById({_id: req.user._id})
+    .then((user) => {
+        user.phone= phone;
+        user.save()
+        .then(() => {
+            res.redirect('/profile');
+        });
+    });
+});
+
+app.post('/addLocation',(req,res) => {
+    const location= req.body.location;
+    User.findById({_id: req.user._id})
+    .then((user) => {
+        user.location= location;
+        user.save()
+        .then(() => {
+            res.redirect('/profile');
+        });
+    });
+});
+
+
+
 
 
 

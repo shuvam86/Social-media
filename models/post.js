@@ -8,14 +8,26 @@ const postSchema = new Schema({
     body: {
         type: String
     },
+
     user: {
         type: Schema.Types.ObjectId,
         ref: 'user'
     },
+    status: {
+        type: String,
+        default: 'public'
+    },
+
+
     date: {
         type: Date,
         default: Date.now
     },
+    allowComments: {
+        type: Boolean,
+        default: true
+    },
+
     comments: [{
         commentBody: {
             type: String

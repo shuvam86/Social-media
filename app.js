@@ -127,7 +127,7 @@ app.get('/profile', ensureAuthentication, (req, res) => {
     // res.render('profile');
 });
 
-app.get('/users',(req,res) => {
+app.get('/users',ensureAuthentication, (req,res) => {
     User.find({}).then((users) => {       // {} retrieve all users from collection
         res.render('users', {
             users:users                   // we pass users object which contain all users data
@@ -170,6 +170,46 @@ app.post('/addLocation',(req,res) => {
     });
 });
 
+
+app.get('/addPost',(req,res) => {
+    res.render('addPost');
+});
+
+
+
+app.post('/savePost', (req,res) => {
+    // console.log(req.body);                          //body will hold object. if we type body.title it holds value of title. body.body holds value of body
+    var allowComments;
+    if(req.body.allowComments) {
+        allowComments= true;
+    }
+    else {
+        allowComments= false;
+    }
+    const newPost= {
+        title: req.body.title,
+        body: req.body.body,
+        status: req.body.status,
+        allowComments: allowComments,
+        user: req.user._id
+    }
+    new Post(newPost).save()
+    .then(() => {
+        res.redirect('/posts');
+    })
+});
+
+
+app.get('/posts', ensureAuthentication, (req,res) => {
+    Post.find({status: 'public'})
+    .populate('user')
+    .sort({date: 'desc'})
+    .then((posts) => {
+        res.render('publicPosts', {
+            posts:posts
+        });
+    });
+});
 
 
 

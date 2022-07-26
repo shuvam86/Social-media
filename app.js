@@ -12,7 +12,7 @@ const keys = require('./config/keys');
 
 const User= require('./models/user');  //we collected user information in this variable
 const Post= require('./models/post');
-
+const methodOverride= require('method-override');
 
 
 
@@ -41,6 +41,9 @@ const app = express();
      resave: true,
      saveUninitialized: true
  }));
+
+ app.use(methodOverride('_method'));
+
  app.use(passport.initialize());
  app.use(passport.session());
 
@@ -117,12 +120,23 @@ app.get('/auth/facebook/callback',
 
 
 app.get('/profile', ensureAuthentication, (req, res) => {
-    User.findById({_id:req.user._id})     //we will find user information through user collection (line no 32(user)) and find specific id ny findById
-    .then((user) => {
+    // User.findById({_id:req.user._id})     //we will find user information through user collection (line no 32(user)) and find specific id ny findById
+    // .then((user) => {
+    //     res.render('profile', {
+    //         user:user
+    //     });
+    // })
+
+    Post.find({user: req.user._id})
+    .populate('user')
+    .sort({date: 'desc'})
+    .then((posts) => {
         res.render('profile', {
-            user:user
+            posts:posts
         });
-    })
+    });
+
+
 
     // res.render('profile');
 });
@@ -199,6 +213,38 @@ app.post('/savePost', (req,res) => {
     })
 });
 
+
+app.get('/editPost/:id', (req,res) => {
+    Post.findOne({_id:req.params.id})
+    .then((post) => {
+        res.render('editingPost', {
+            post:post
+        });
+    });
+});
+
+
+app.put('/editingPost/:id', (req,res) => {
+    Post.findOne({_id: req.params.id})
+    .then((post) => {
+        var allowComments;
+        if(req.body.allowComments) {
+            allowComments= true;
+        }
+        else {
+            allowComments= false;
+        }  
+        post.title= req.body.title;
+        post.body= req.body.body;
+        post.status= req.body.status;
+        post.allowComments= allowComments;
+        post.save()
+        .then(() => {
+            res.redirect('/profile');
+});
+    
+    });
+});
 
 app.get('/posts', ensureAuthentication, (req,res) => {
     Post.find({status: 'public'})

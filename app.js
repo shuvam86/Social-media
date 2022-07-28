@@ -150,7 +150,7 @@ app.get('/users',ensureAuthentication, (req,res) => {
     });
 });
 
-app.get('/user/:id',(req,res) => {
+app.get('/user/:id',ensureAuthentication,(req,res) => {
     User.findById({_id: req.params.id})       //params is used to get parameter and id is used to get id from :id from line 136. We will find id matching from users collection by _id
     .then((user) => {                         //we get a specific user
         res.render('user', {
@@ -161,7 +161,7 @@ app.get('/user/:id',(req,res) => {
 
 
 
-app.post('/addPhone',(req,res) => {
+app.post('/addPhone', ensureAuthentication,(req,res) => {
     const phone= req.body.phone;
     User.findById({_id: req.user._id})
     .then((user) => {
@@ -173,7 +173,7 @@ app.post('/addPhone',(req,res) => {
     });
 });
 
-app.post('/addLocation',(req,res) => {
+app.post('/addLocation',ensureAuthentication,(req,res) => {
     const location= req.body.location;
     User.findById({_id: req.user._id})
     .then((user) => {
@@ -186,7 +186,7 @@ app.post('/addLocation',(req,res) => {
 });
 
 
-app.get('/addPost',(req,res) => {
+app.get('/addPost',ensureAuthentication,(req,res) => {
     // res.render('addPost');
     res.render('payment', {
         StripePublishableKey: keys.StripePublishableKey
@@ -194,7 +194,7 @@ app.get('/addPost',(req,res) => {
 });
 
 
-app.post('/acceptPayment',(req,res) => {
+app.post('/acceptPayment',ensureAuthentication,(req,res) => {
     // console.log(req.body);
     const amount= 500;
     stripe.customers.create({
@@ -217,12 +217,12 @@ app.post('/acceptPayment',(req,res) => {
     });
 });
 
-app.get('/displayPostForm',(req,res) => {
+app.get('/displayPostForm',ensureAuthentication,(req,res) => {
     res.render('addPost');
 });
 
 
-app.post('/savePost', (req,res) => {
+app.post('/savePost', ensureAuthentication,(req,res) => {
     // console.log(req.body);                          //body will hold object. if we type body.title it holds value of title. body.body holds value of body
     var allowComments;
     if(req.body.allowComments) {
@@ -245,7 +245,7 @@ app.post('/savePost', (req,res) => {
 });
 
 
-app.get('/editPost/:id', (req,res) => {
+app.get('/editPost/:id',ensureAuthentication, (req,res) => {
     Post.findOne({_id:req.params.id})
     .then((post) => {
         res.render('editingPost', {
@@ -255,7 +255,7 @@ app.get('/editPost/:id', (req,res) => {
 });
 
 
-app.put('/editingPost/:id', (req,res) => {
+app.put('/editingPost/:id',ensureAuthentication, (req,res) => {
     Post.findOne({_id: req.params.id})
     .then((post) => {
         var allowComments;
@@ -278,7 +278,7 @@ app.put('/editingPost/:id', (req,res) => {
 });
 
 
-app.delete('/:id',(req,res) => {
+app.delete('/:id',ensureAuthentication,(req,res) => {
     Post.remove({_id: req.params.id})
     .then(() => {
         res.redirect('profile');
@@ -298,7 +298,7 @@ app.get('/posts', ensureAuthentication, (req,res) => {
     });
 });
 
-app.get('/showposts/:id',(req,res) => {
+app.get('/showposts/:id',ensureAuthentication,(req,res) => {
     Post.find({user: req.params.id, status:'public'})
     .populate('user')
     .sort({date:'desc'})
@@ -311,7 +311,7 @@ app.get('/showposts/:id',(req,res) => {
 
 
 
-app.post('/addComment/:id', (req,res) => {
+app.post('/addComment/:id',ensureAuthentication, (req,res) => {
     Post.findOne({_id:req.params.id})
     .then((post) => {
         const newComment= {
@@ -329,7 +329,7 @@ app.post('/addComment/:id', (req,res) => {
 
 
 
-app.get('/logout', function(req, res, next) {
+app.get('/logout',ensureAuthentication, function(req, res, next) {
     req.logout(function(err) {
       if (err) { return next(err); }
       res.redirect('/');

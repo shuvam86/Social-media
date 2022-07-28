@@ -1,5 +1,7 @@
 <div class="container">
-    <h1>Please pay to post</h1>
+    <h1>Make a Payment</h1>
+    <div class="col-8">
+    <p>Pay $5 to create a post</p>
     <form action="/acceptPayment" method="POST">
         <script src="https://checkout.stripe.com/checkout.js" 
         class="stripe-button" 
@@ -11,4 +13,5 @@
         data-locale="auto">
         </script>
     </form>
+    </div>
 </div>

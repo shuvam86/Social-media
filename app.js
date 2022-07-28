@@ -9,6 +9,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 // Connect to MongoURI exported from external file
 const keys = require('./config/keys');
+const stripe= require('stripe')(keys.StripeSecretKey);
 
 const User= require('./models/user');  //we collected user information in this variable
 const Post= require('./models/post');
@@ -186,9 +187,40 @@ app.post('/addLocation',(req,res) => {
 
 
 app.get('/addPost',(req,res) => {
-    res.render('addPost');
+    // res.render('addPost');
+    res.render('payment', {
+        StripePublishableKey: keys.StripePublishableKey
+    });
 });
 
+
+app.post('/acceptPayment',(req,res) => {
+    // console.log(req.body);
+    const amount= 500;
+    stripe.customers.create({
+        email: req.body.stripeEmail,
+        source: req.body.stripeToken
+    })
+    .then((customer) => {
+        
+        stripe.paymentIntents.create({
+            amount: 1099,
+            currency: 'inr',
+            payment_method_types: ['card'],
+        })
+        .then((charge) => {
+            console.log("chalgya");
+            res.render('success', {
+                charge:charge
+            });
+            
+        });
+    });
+});
+
+app.get('/displayPostForm',(req,res) => {
+    res.render('addPost');
+});
 
 
 app.post('/savePost', (req,res) => {

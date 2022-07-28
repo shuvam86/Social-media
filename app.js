@@ -209,7 +209,6 @@ app.post('/acceptPayment',(req,res) => {
             payment_method_types: ['card'],
         })
         .then((charge) => {
-            console.log("chalgya");
             res.render('success', {
                 charge:charge
             });

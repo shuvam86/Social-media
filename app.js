@@ -77,7 +77,7 @@ mongoose.connect(keys.MongoURI, {
     console.log(err);
 });
 // set environment variable for port
-const port = process.env.PORT;
+const port = process.env.PORT || 3000;
 // Handle routes
 app.get('/', (req, res) => {
     res.render('home');
@@ -340,8 +340,13 @@ app.get('/logout', function(req, res, next) {
 
 
 
+  var server_port = process.env.YOUR_PORT || process.env.PORT || 3000;
+  var server_host = process.env.YOUR_HOST || '0.0.0.0';
+  app.listen(server_port, server_host, function() {
+      console.log('Listening on port %d', server_port);
+  });
 
-
-app.listen(port, () => {
-    console.log(`Server is running on port ${port}`);
-});
+// app.listen(port, () => {
+    
+//     console.log(`Server is running on port ${port}`);
+// });

@@ -77,7 +77,7 @@ mongoose.connect(keys.MongoURI, {
     console.log(err);
 });
 // set environment variable for port
-const port = process.env.PORT || 3000;
+const port = process.env.PORT;
 // Handle routes
 app.get('/', (req, res) => {
     res.render('home');

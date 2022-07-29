@@ -22,6 +22,8 @@ const methodOverride= require('method-override');
 
 require('./passport/google-passport');
 require('./passport/facebook-passport');
+require('./passport/instagram-passport');
+
 
 
 const {
@@ -115,7 +117,22 @@ app.get('/auth/facebook/callback',
     res.redirect('/');
   });
 
-//handle profile route
+
+  app.get('/auth/instagram',
+  passport.authenticate('instagram'));
+
+app.get('/auth/instagram/callback', 
+  passport.authenticate('instagram', { failureRedirect: '/' }),
+  (req, res) => {
+    // Successful authentication, redirect home.
+    res.redirect('/profile');
+  });
+
+
+
+
+
+  //handle profile route
 
 
 

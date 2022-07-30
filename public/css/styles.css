@@ -73,3 +73,12 @@ h1{
     color: green;
     text-align: center;
 }
+
+#hp {
+    font-family: uchen;
+    font-weight: bold;
+}
+
+.navbar-brand {
+    font-family: uchen;
+}

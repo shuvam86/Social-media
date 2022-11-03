@@ -21,9 +21,6 @@ const methodOverride= require('method-override');
 
 
 require('./passport/google-passport');
-require('./passport/facebook-passport');
-require('./passport/instagram-passport');
-
 
 
 const {

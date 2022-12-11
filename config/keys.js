@@ -3,3 +3,5 @@ if (process.env.NODE_ENV === 'production') {
 } else {
     module.exports = require('./keys-dev');
 }
+
+//module.exports is used to export folders or files to use in different files/folders
